@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AGShop</title>
+    {% load static %}
+    {% load app_tags %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="{% static 'main/images/favicon.png' %}" rel="icon">
+    <script type="application/x-javascript">
+		addEventListener("load", function() {
+			setTimeout(hideURLbar, 0);
+		}, false);
+		function hideURLbar(){
+			window.scrollTo(0,1);
+			 }
+			 function update_cart() {
+			 	if (localStorage.getItem('add_to_cart') == null) {
+					var add_to_cart = {};
+				}
+				else {
+					add_to_cart = JSON.parse(localStorage.getItem('add_to_cart'));
+					document.getElementById('cart_no').innerHTML = Object.keys(add_to_cart).length;
+
+				}
+			 	var prod_list_local = [];
+					if (localStorage.getItem('add_to_cart') != null) {
+						for (var prd_item in add_to_cart) {
+							prod_list_local.push(prd_item + "|" + add_to_cart[prd_item]);
+						}
+					}
+					$.ajax(
+						{
+							type: "GET",
+							url: "/dummy_cart",
+							data: {
+								prod_list: prod_list_local.toString()
+							},
+							success: function (data) {
+								console.log(data);
+							}
+						});
+					//{% if request.user.is_authenticated %}
+					localStorage.clear();
+				    //{% endif %}
+						 }
+		 </script>
+    <!--//tags -->
+    <link href="{% static 'main/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" media="all" />
+    <link href="{% static 'main/css/style.css' %}" rel="stylesheet" type="text/css" media="all" />
+    <link href="{% static 'saler/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+
+
+    {% block main_head %}
+    {% endblock main_head %}
+</head>
+
+
+
+
+<body>
+    <nav class="main_nav" id="main_nav">
+        <div class="container">
+            <div class="nav_links">
+                <a href="{% url 'home' %}" class="logo">AGShop</i></a>
+                <form class="form-inline my-2 my-lg-0 serch" action="/search">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search for Anything You Want"
+                        aria-label="Search" name="query">
+                    <button class="btn" type="submit" style="margin: 0;"><i class="fa fa-search"
+                            aria-hidden="true"></i></button>
+                </form>
+            </div>
+            <div class="user_links pt-1">
+                <a href="{% url 'main_cart' %}" style="font-size: 22px; color: #fff; margin-right: 20px;"><i
+                        class="fa fa-shopping-cart" aria-hidden="true"></i><sup><span class="badge"
+                            id="cart_no">{{cart_element_no}}</span></sup></a>
+                {% if request.user.is_authenticated %}
+                <a href="##" data-container="body" data-toggle="popover" data-placement="bottom" data-trigger="focus"
+                    data-html="true"
+                    data-content="<a href='{% url 'myorders' %}'>My Order</a><br><a href='{% url 'account_settings' %}'>Account Settings</a>"><img
+                        src="{{request.user.userdetail.photo.url}}"
+                        style="height: 20px; width: 20px; border-radius: 10px; margin-right: 3px;">{{request.user.first_name}}</a>&nbsp;|
+                <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}">Login</a>&nbsp;|
+                <a href="{% url 'signup' %}">Register</a>&nbsp;|
+                <a href="{% url 'seller_signup' %}">Seller</a>&nbsp;|
+                <a href="{% url 'about' %}">About Us</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <header id="navheader">
+        <div style="overflow-y: scroll; height: 90%;">
+            <ul>
+                {% for cat in category %}
+                <li>
+                    <a href="#list{{forloop.counter}}" data-toggle="collapse" aria-expanded="false"
+                        class="dropdown-toggle">{{cat.name}}</a>
+                    <ul class="collapse list-unstyled" id="list{{forloop.counter}}">
+                        {% for item in cat.sub_Categories|split:"," %}
+                        <li>
+                            <a href="/MenuFilter/{{cat}},{{item}}">{{item}}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <section class="social_media">
+            <a href="#"><i class="fa fa-facebook-square" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-twitter-square" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-linkedin-square" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-youtube-play" aria-hidden="true"></i></a> |
+            &copy; 2022-23
+        </section>
+    </header>
+    <a class="menu_bar"><i class="fa fa-bars" aria-hidden="true"></i></a>
+    <main class="" id="menu_close">
+        {% block main_body %}
+        {% endblock main_body %}
+    </main>
+    {% block main_script %}
+    {% endblock main_script %}
+
+
+    <div class="container">
+        <div class="row my-3">
+            <div class="col-md-7">
+                <h2 class="text-center">Term And Conditions</h2>
+                <p>Terms of service are the legal agreements between a service provider and a person who wants to use
+                    that service. The person must agree to abide by the terms of service in order to use the offered
+                    service.</p>
+
+
+                <p>Having a Terms and Conditions agreement is completely optional. No laws require you to have one. Not
+                    even the super-strict and wide-reaching General Data Protection Regulation (<a
+                        href="https://termsfeed.com/blog/gdpr/">GDPR</a>).</p>
+                <p>It's up to you to set the rules and guidelines that the user must agree to. You can think of your
+                    Terms and Conditions agreement as the legal agreement where you <strong>maintain your
+                        rights</strong> to exclude users from your app in the event that they abuse your app, where you
+                    maintain your legal rights against potential app abusers, and so on.</p>
+                <p>Terms and Conditions are also known as Terms of Service or Terms of Use.</p>
+
+
+                <!-- first model start -->
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#staticBackdrop">
+                    Required Or Not !!
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+                    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Required Or Not !!</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <h5>Is a Terms and Conditions agreement required?</h5>
+
+                                <p>A Terms and Conditions agreement is <strong>not</strong> legally required. However,
+                                    having one comes with a number of important benefits for both you and your
+                                    users/customers.</p>
+                                <p>While a T&C isn't required for your app or website, it is still legally binding and
+                                    enforceable once agreed to. ... Once your users accept your T&C, they are legally
+                                    bound to the agreement and can have their use of the website or app terminated for
+                                    breaking the agreement..</p>
+                                <hr>
+
+                                <button type="button" class="btn btn-outline-success btn-lg" data-toggle="popover"
+                                    title="Popover title"
+                                    data-content="The terms of a contract can be expressly agreed orally or in writing. In addition, terms may even be implied by law, the conduct of the parties, custom in a particular trade, previous dealings or the parties' intentions. Contractual terms are defined as conditions, warranties or innominate terms.">termsfeed</button>
+
+
+
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Understood</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1st modal end -->
+
+                <!-- 2nd modal start -->
+
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-warning mx-3" data-toggle="modal" data-target="#static">
+                    Clauses
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="static" data-backdrop="static" data-keyboard="false" tabindex="-1"
+                    aria-labelledby="static" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="static">clauses in my Terms and Conditions agreement?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+
+                                <div>
+                                    <p>Some clauses are specific to certain types of businesses and won't be found in
+                                        all Terms and Conditions agreements. </p>
+                                    <p>In general, almost every Terms and Conditions agreement should include the
+                                        following clauses:</p>
+                                    <ol>
+                                        <li>Introduction</li>
+                                        <li>Right to make changes to the agreement</li>
+                                        <li>User guidelines (rules, restrictions, requirements)</li>
+                                        <li>Copyright and intellectual property</li>
+                                        <li>Governing law</li>
+                                        <li>Warranty disclaimer</li>
+                                        <li>Limitation of liability</li>
+                                        <li>Termination of accounts/service</li>
+                                        <li>Contact information</li>
+                                    </ol>
+                                    <p>The more complicated your website or business is, the more clauses you will end
+                                        up having.</p>
+                                    <p>Some business-specific clauses include the following:</p>
+                                    <ol>
+                                        <li>Payment terms</li>
+                                        <li>Cancelling service or subscription</li>
+                                        <li>Refunds</li>
+                                        <li>User-generated content</li>
+                                    </ol>
+
+
+
+
+                                    <p>Display your Terms and Conditions agreement in the following places, where
+                                        applicable:</p>
+                                    <ol>
+                                        <li>Via a static link to your <strong>website footer</strong></li>
+                                        <li><strong>In a menu</strong> within your mobile app (typically in an About,
+                                            Legal, Info menu)</li>
+                                        <li>On your "<strong>Create Account</strong>" or similar type of page</li>
+                                        <p>To make your Terms &amp; Conditions agreement enforceable, place an
+                                            <strong>un-ticked checkbox</strong> next to a link to your agreement and a
+                                            statement that says something along the lines of, "<em>By checking this box,
+                                                you agree to be bound by our Terms and Conditions agreement.</em>"
+                                        </p>
+                                        <p>You can also use an "I Agree" button instead of a checkbox that users must
+                                            click to show they agree to your Terms and Conditions agreement.</p>
+
+                                        <ol>
+                                            <li>The <strong>Intellectual Property</strong> disclosure will inform users
+                                                that the contents, logo and other visual media you created is your
+                                                property and is protected by copyright laws.</li>
+                                            <li>A <strong>Termination</strong> clause will inform that users' accounts
+                                                on your website and mobile app or users' access to your website and
+                                                mobile (if users can't have an account with you) can be terminated in
+                                                case of abuses or at your sole discretion.</li>
+                                            <li>A <strong>Governing Law</strong> will inform users which laws govern the
+                                                agreement. This should the country in which your company is
+                                                headquartered or the country from which you operate your website and
+                                                mobile app.</li>
+                                            <li>A <strong>Links To Other Web Sites</strong> clause will inform users
+                                                that you are not responsible for any third party websites that you link
+                                                to. This kind of clause will generally inform users that they are
+                                                responsible for reading and agreeing (or disagreeing) with the Terms and
+                                                Conditions or Privacy Policies of these third parties.</li>
+
+                                            <li>A <strong>Limit What Users Can Do</strong> clause can inform users that
+                                                <strong>by agreeing to use your service, they're also agreeing to not do
+                                                    certain things</strong>. This can be part of a very long and
+                                                thorough list in your Terms and Conditions agreements so as to encompass
+                                                the most amount of negative uses.
+                                            </li>
+
+                                        </ol>
+                                        <p>You can also use your T&amp;C to <strong>inform users aboutÂ&nbsp;trademarks,
+                                                design rights and other intellectual property rights</strong>:</p>
+
+                                        <p>If you operate a SaaS app, a "Termination clause" will be very important. The
+                                            relationship with your customers can end for any number of reasons, from a
+                                            customer changing careers to a new and better SaaS option becoming available
+                                            or just general dissatisfaction with a service.</p>
+                                        <p>But as the owner of the app, you should have a way to actively end a
+                                            relationship with a customer under certain circumstances.</p>
+
+                                        <p>It has included sections in their Terms of Use that outline what happens in
+                                            the event of termination of service by either party. Note how the issue of a
+                                            refund is addressed, as well as what happens with content that belongs to a
+                                            user upon termination of the user's account:</p>
+
+                                        </ul>
+                                        <p>Let's look at an example: the <strong>Limitation of Liability of Your
+                                                Products</strong> clause.</p>
+                                        <p>No matter what kind of goods you sell, best practices direct you to present
+                                            any warranties you are disclaiming and liabilities you are limiting
+                                            <strong>in a way</strong> that your customers will notice.
+                                        </p>
+                                        <p>You've probably noticed that these clauses in contracts are always in blocks
+                                            of all-caps text and really do stand out from the rest of the document.</p>
+
+                                        <p>This exact language is used across multiple industries, businesses, and apps
+                                            in order to legally disclaim warranties and limit liability.</p>
+                                        <p>Include the words "<strong>AS IS</strong>" for items and "<strong>AS
+                                                AVAILABLE</strong>" if you provide any sort of service that may not be
+                                            available 100% of the time.</p>
+
+                                        <ul>
+                                            <li>Can users create an account on your website or app?</li>
+                                            <li>Can users create or publish content on your website or app?</li>
+                                            <li>Is the content published by users available publicly?</li>
+                                            <li>Can users send you copyright infringement notices?</li>
+                                            <li>If your website or app an ecommerce store?</li>
+                                        </ul>
+                                        <p>Before you publish the agreement online, make sure your Terms and Conditions
+                                            includes important disclosures, such as:</p>
+                                        <ul>
+                                            <li>Termination of using or accessing your website or sections of your
+                                                website to prevent abuses</li>
+                                            <li>Governing Law" disclosure to inform which country laws are governing the
+                                                agreement</li>
+                                            <li>Contact details to inform users how they contact you with questions
+                                                regarding your legal agreements and its provisions</li>
+                                        </ul>
+
+                                        </ul>
+                                        <hr>
+                                        <h3>Display your Terms and Conditions agreement in the following places, where
+                                            applicable:</h3>
+
+                                        <ul>
+                                            <li>Via a static link to your website footer</li>
+                                            <li>In a menu within your mobile app (typically in an About, Legal, Info
+                                                menu)</li>
+                                            <li>On your "Create Account" or similar type of page</li>
+                                            <li>On any checkout or order finalization pages</li>
+                                            <p>Adding a link to your website footer or within your app menu makes your
+                                                Terms and Conditions agreement available at any and all times. Adding a
+                                                link to times when a user is interacting with you in a more specific
+                                                way, such as when creating an account or placing an order, helps remind
+                                                the user about your Terms and Conditions agreement at that important
+                                                time.</p>
+                                        </ul>
+
+
+
+                                </div>
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Understood</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 2nd model end -->
+
+                <!-- third modal start -->
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#static1">
+                    Benefits & Conditions
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="static1" data-backdrop="static" data-keyboard="false" tabindex="-1"
+                    aria-labelledby="static" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="static">Benefits & Conditions</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div itemprop="text">
+                                    <p>The main benefit of having a Terms and Conditions agreement is that <strong>you
+                                            maintain the highest level of control over your website/business</strong>.
+                                    </p>
+                                    <p>Your Terms and Conditions agreement is where you're able to list your rules when
+                                        it comes to the use of your website. You're also able to maintain the right to
+                                        terminate abusive accounts, disclaim warranties and limit your liability.</p>
+                                    <p>There are <strong>benefits for your users</strong>, as well. Your Terms and
+                                        Conditions agreement makes it clear to your users what you expect from them,
+                                        what they are not allowed to do with your website/service, and how they must
+                                        handle certain situations such as arbitration and canceling their own accounts.
+                                    </p>
+                                    <p>Without a Terms and Conditions agreement, your rules and requirements won't be
+                                        made public and provided to your users.
+                                        You may also get bombarded with questions from users asking about things that
+                                        would otherwise be included in your Terms and Conditions agreement.</p>
+                                </div>
+
+
+                                <h3> Contract Conditions</h3>
+
+                                <p>This means that each of the parties is obligated, or required, to perform a duty
+                                    under the contract. The contract conditions determine the parties' obligations. A
+                                    condition is an act or event that affects a party's contractual duty. It is a
+                                    qualification that is placed on an obligation.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Understood</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- third modal end -->
+
+
+                <!-- forth modal start -->
+                <button type="button" class="btn btn-danger mx-3 my-4" data-backdrop="static" data-keyboard="false"
+                    tabindex="-1" aria-labelledby="static" aria-hidden="true" data-toggle="modal"
+                    data-target="#exampleModal" data-whatever="@mdo">Query</button>
+
+
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Query</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="/QueryContact/" method="post">{% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="name">Name</label>
+                                        <input type="text" class="form-control" id="name" name='name'
+                                            placeholder="Enter Your Name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="name">Email</label>
+                                        <input type="email" class="form-control" id="email" name='email'
+                                            placeholder="Enter Your Email">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="name">Phone</label>
+                                        <input type="tel" class="form-control" id="phone" name='phone'
+                                            placeholder="Enter Your Phone Number">
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label for="desc">How May We Help You?</label>
+                                        <textarea class="form-control" id="desc" name='desc' rows="3"></textarea>
+                                    </div>
+                                    <input type="submit" class="btn btn-success" value="Submit">
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- forth modal end -->
+
+            </div>
+
+
+            <div class="col-md-5">
+
+                <img class="bd-placeholder-img img-fluid" width="500" height="500" alt=""
+                    src='{% static "main\images\term3.jpg" %}'>
+
+                <img class="bd-placeholder-img img-fluid mt-3" width="500" height="#" lt=""
+                    src='{% static "main\images\term2.jfif" %}'>
+
+            </div>
+        </div>
+
+
+        <!-- footer -->
+
+        <footer class="container">
+
+            <p class="text-center">© 2020 Company, Inc. · <a href="{% url 'TermAndPrivacy' %}">Privacy</a> · <a
+                    href="{% url 'TermAndPrivacy' %}">Terms</a></p>
+        </footer>
+
+
+    </div>
+
+
+
+
+    <script type="text/javascript">
+        if (document.body.offsetWidth <= 1024) {
+
+            document.getElementById('main_nav').innerHTML = `<div class="nav_links" id="nav_links1">
+				<a href="{% url 'home' %}" class="logo">Wrappers</i></a>
+				<div style="float:right;" class="pr-1 pt-1">
+					{% if request.user.is_authenticated %}
+					<a href="##" data-container="body" data-toggle="popover" data-placement="bottom" data-trigger="focus" data-html="true" data-content="<a href='{% url 'myorders' %}'>My Order</a><br><a href='{% url 'account_settings' %}'>Account Settings</a>"><img src="{{request.user.userdetail.photo.url}}"
+							style="height: 20px; width: 20px; border-radius: 10px; margin-right: 3px;">{{request.user.first_name|slice:"0:10"}}</a>&nbsp;|
+					<a href="{% url 'logout' %}">Logout</a>
+					{% else %}
+					<a href="{% url 'login' %}">Login</a>&nbsp;|
+					<a href="{% url 'seller_signup' %}">Seller</a>
+					{% endif %}
+				</div>
+			</div>
+			<div class="user_links">
+				<form class="form-inline serch" action="/search" id="s_form">
+					<input class="form-control" type="search" placeholder="Search for Anything You Want"
+						aria-label="Search" name="query">
+					<button class="btn" type="submit" style="margin: 0;"><i class="fa fa-search" aria-hidden="true"></i></button>
+				</form>
+				<a href="{% url 'main_cart' %}" style="font-size: 25px; color: #fff; float:right;" class="pt-1"><i class="fa fa-shopping-cart" aria-hidden="true"></i><sup><span class="badge p-0 m-0" id="cart_no">{{cart_element_no}}</span></sup></a>
+
+			</div>`;
+            window.onscroll = function () {
+                var currentScrollPos = window.pageYOffset;
+                if (currentScrollPos >= 100) {
+                    document.getElementById("nav_links1").style.display = "none";
+                    document.getElementById("s_form").style.marginLeft = "20px";
+                    document.getElementById('main_nav').style.height = "42px";
+                } else {
+                    document.getElementById("nav_links1").style.display = "block";
+                    document.getElementById("s_form").style.marginLeft = "unset";
+                    document.getElementById('main_nav').style.height = "90px";
+
+                }
+
+            }
+        }
+    </script>
+
+    <!-- Add to cart -->
+    <script type="text/javascript">
+        if (localStorage.getItem('add_to_cart') == null) {
+            var add_to_cart = {};
+        }
+        else {
+            add_to_cart = JSON.parse(localStorage.getItem('add_to_cart'));
+        }
+    </script>
+    {% if not user.is_authenticated %}
+    <script type="text/javascript">
+        if (localStorage.getItem('add_to_cart') == null) {
+            var add_to_cart = {};
+        }
+        else {
+            add_to_cart = JSON.parse(localStorage.getItem('add_to_cart'));
+            document.getElementById('cart_no').innerHTML = Object.keys(add_to_cart).length;
+
+        }
+        $('.add_to_cart').click(function () {
+            var idstr = $(this).attr("prod_id");
+            console.log(idstr);
+            if (add_to_cart[idstr] != undefined) {
+                add_to_cart[idstr] = add_to_cart[idstr] + 1;
+            }
+            else {
+                add_to_cart[idstr] = 1;
+            }
+            localStorage.setItem('add_to_cart', JSON.stringify(add_to_cart));
+            document.getElementById('cart_no').innerHTML = Object.keys(add_to_cart).length;
+            update_cart();
+        });
+    </script>
+    {% endif %}
+
+    {% if request.user.is_authenticated %}
+    <script type="text/javascript">
+        $('.add_to_cart').click(function () {
+            var id = $(this).attr("prod_id");
+            var siz = this.innerText;
+            if (siz == "Add To Cart")
+                siz = "None"
+            var catid = '' + id + ',' + siz;
+            $.ajax(
+                {
+                    type: "GET",
+                    url: "/add_to_cart",
+                    data: {
+                        prod_id: catid
+                    },
+                    success: function (data) {
+                        $('#cart_no').text(data);
+                    }
+                })
+        });
+    </script>
+    {% endif %}
+    <!-- js for sending local data -->
+    <script type="text/javascript">
+        var prod_list_local = [];
+        if (localStorage.getItem('add_to_cart') != null) {
+            for (var prd_item in add_to_cart) {
+                prod_list_local.push(prd_item + "|" + add_to_cart[prd_item]);
+            }
+        }
+        $.ajax(
+            {
+                type: "GET",
+                url: "/dummy_cart",
+                data: {
+                    prod_list: prod_list_local.toString()
+                },
+                success: function (data) {
+                    console.log(data);
+                }
+            });
+        //{% if request.user.is_authenticated %}
+        localStorage.clear();
+	    //{% endif %}
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+    <script type="text/javascript" src="{% static 'main/js/main.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'main/js/bootstrap.min.js' %}"></script>
+</body>
+
+</html>
